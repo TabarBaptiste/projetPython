@@ -61,6 +61,25 @@ def connect_to_db():
                     for col_idx, value in enumerate(row):
                         Label(table_window, text=value).grid(row=row_idx, column=col_idx)
 
+            # Définir une fonction pour exécuter une requête SQL
+            def execute_sql():
+                query = sql_entry.get()
+                if query:
+                    try:
+                        sql_cursor = conn.cursor()
+                        sql_cursor.execute(query)
+                        result = sql_cursor.fetchall()
+                        sql_cursor.close()
+
+                        # Afficher le résultat dans une nouvelle fenêtre
+                        result_window = Toplevel(root)
+                        result_window.title("Résultat de la requête SQL")
+                        for row_idx, row in enumerate(result):
+                            for col_idx, value in enumerate(row):
+                                Label(result_window, text=value).grid(row=row_idx, column=col_idx)
+                    except mysql.connector.Error as err:
+                        print(f"Erreur d'exécution de la requête SQL : {err}")
+
             # Créer la liste déroulante pour afficher les tables
             table_label = Label(root, text="Table :")
             table_label.pack()
@@ -73,6 +92,16 @@ def connect_to_db():
             # Bouton pour afficher le contenu de la table sélectionnée
             show_table_button = Button(root, text="Afficher le contenu de la table sélectionnée", command=show_table_content)
             show_table_button.pack()
+
+            # Champ texte pour la requête SQL
+            sql_label = Label(root, text="Requête SQL :")
+            sql_label.pack()
+            sql_entry = Entry(root, width=50)
+            sql_entry.pack()
+
+            # Bouton pour exécuter la requête SQL
+            execute_sql_button = Button(root, text="Exécuter la requête SQL", command=execute_sql)
+            execute_sql_button.pack()
 
     except mysql.connector.Error as err:
         print(f"Erreur de connexion à la base de données : {err}")
